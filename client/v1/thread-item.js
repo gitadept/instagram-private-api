@@ -25,6 +25,10 @@ ThreadItem.prototype.parseParams = function (json) {
     }
     if (hash.type == "media") {
         hash.media = json.media.image_versions2.candidates;
+
+        if (json.reactions) {
+            hash.reactions = json.reactions;
+        }
     }
     if (hash.type == "media_share") {
         hash.type = 'mediaShare';
