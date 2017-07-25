@@ -14,8 +14,8 @@ function CookieRedisStorage(id, options) {
 
   const store = new RedisCookieStore(`instagramcookie:${id}`, options);
 
-  this.getAllCookies = (cb) => {
-    store.findCookies(CONSTANTS.HOSTNAME, '/', (err, cookies) => {
+  store.__proto__.getAllCookies = function(cb) {
+    store.findCookies(CONSTANTS.HOSTNAME, '/', function(err, cookies) {
       if (err) return cb(err);
 
       cookies.sort(function(a, b) {
