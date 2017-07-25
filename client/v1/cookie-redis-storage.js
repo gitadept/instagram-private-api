@@ -14,11 +14,14 @@ function CookieRedisStorage(id, options) {
 
   const store = new RedisCookieStore(`instagramcookie:${id}`, options);
 
-  store.__proto__.getAllCookies = function(cb) {
-    store.findCookies(CONSTANTS.HOSTNAME, '/', function(err, cookies) {
+  this.getAllCookies = (cb) => {
+    store.findCookies(CONSTANTS.HOSTNAME, '/', (err, cookies) => {
+      if (err) return cb(err);
+
       cookies.sort(function(a, b) {
         return (a.creationIndex || 0) - (b.creationIndex || 0);
       });
+
       cb(null, cookies);
     });
   };
