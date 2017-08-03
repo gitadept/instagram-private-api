@@ -7,10 +7,12 @@ var CookieStorage = require("./cookie-storage");
 var RequestJar = require("./jar");
 
 function Session(device, storage, proxy) {
-    this.setDevice(device);    
+    this.setDevice(device);
     this.setCookiesStorage(storage);
     if(_.isString(proxy) && !_.isEmpty(proxy))
         this.proxyUrl = proxy;
+    if(_.isObject(proxy) && !_.isEmpty(proxy))
+        this.proxyObj = proxy;
 }
 
 util.inherits(Session, Resource);
@@ -48,8 +50,8 @@ Object.defineProperty(Session.prototype, "device", {
 
 
 Object.defineProperty(Session.prototype, "CSRFToken", {
-    get: function() { 
-        var cookies = this.jar.getCookies(CONSTANTS.HOST) 
+    get: function() {
+        var cookies = this.jar.getCookies(CONSTANTS.HOST)
         var item = _.findWhere(cookies, { key: "csrftoken" });
         return item ? item.value : "missing";
     },
@@ -57,13 +59,24 @@ Object.defineProperty(Session.prototype, "CSRFToken", {
 });
 
 Object.defineProperty(Session.prototype, "proxyUrl", {
-    get: function() { 
+    get: function() {
         return this._proxyUrl;
     },
     set: function (val) {
         if (!Helpers.isValidUrl(val) && val !== null)
             throw new Error("`proxyUrl` argument is not an valid url")
         this._proxyUrl = val;
+    }
+});
+
+Object.defineProperty(Session.prototype, "proxyObj", {
+    get: function() {
+        return this._proxyObj;
+    },
+    set: function (val) {
+        if (!_.isObject(val) && val !== null)
+            throw new Error("`proxyUrl` argument is not an valid url")
+        this._proxyObj = val;
     }
 });
 
@@ -94,8 +107,12 @@ Session.prototype.getAccountId = function() {
 }
 
 
-Session.prototype.setProxy = function(url) {
-    this.proxyUrl = url;
+Session.prototype.setProxy = function(val) {
+    if (_.isObject(val)) {
+      this.proxyObj = val
+    } else {
+      this.proxyUrl = val;
+    }
     return this;
 }
 
@@ -172,14 +189,14 @@ Session.login = function(session, username, password) {
             // verification, it is still an valid session unless `sessionid` missing
             return session.getAccountId()
                 .then(function () {
-                    // We got sessionId and accountId, we are good to go 
-                    return session; 
+                    // We got sessionId and accountId, we are good to go
+                    return session;
                 })
                 .catch(Exceptions.CookieNotValidError, function (e) {
                     throw error;
                 })
         })
-        
+
 }
 
 Session.create = function(device, storage, username, password, proxy) {
@@ -187,6 +204,8 @@ Session.create = function(device, storage, username, password, proxy) {
     var session = new Session(device, storage);
     if(_.isString(proxy) && !_.isEmpty(proxy))
         session.proxyUrl = proxy;
+    if(_.isObject(proxy) && !_.isEmpty(proxy))
+        session.proxyObj = proxy;
     return session.getAccountId()
         .then(function () {
             return session;
