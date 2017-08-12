@@ -29,14 +29,14 @@ function threadsWrapper(session, promise) {
         if(_.isArray(json.threads))
             return mapPayload(session, json);
         if(_.isEmpty(json.thread_id))
-            throw new Error("Not sure how to map an thread!");   
+            throw new Error("Not sure how to map an thread!");
         // You cannot fetch thread id inmedietly after configure / broadcast
         return Promise.delay(1000).then(function () {
-            return Thread.getById(session, json.thread_id) 
+            return Thread.getById(session, json.thread_id)
         })
         .then(function (thread) {
             return [thread];
-        })  
+        })
     })
 }
 
@@ -86,7 +86,7 @@ Thread.prototype.seen = function () {
     var firstItem = _.first(this.items);
     if(!firstItem)
         throw new Exceptions.ThreadEmptyError();
-    var that = this;    
+    var that = this;
     return this.request()
         .setMethod('POST')
         .generateUUID()
@@ -99,15 +99,15 @@ Thread.prototype.seen = function () {
         })
         .send()
         .then(function(data) {
-            return { 
-                unseenCount: data.unseen_count, 
-                unseenCountTimestamp: parseInt(data.unseenCountTimestamp / 1000) 
+            return {
+                unseenCount: data.unseen_count,
+                unseenCountTimestamp: parseInt(data.unseenCountTimestamp / 1000)
             }
         });
 };
 
 Thread.prototype.approve = function () {
-    var that = this;  
+    var that = this;
     return this.request()
         .setMethod('POST')
         .generateUUID()
@@ -119,7 +119,7 @@ Thread.prototype.approve = function () {
 
 
 Thread.prototype.hide = function () {
-    var that = this;  
+    var that = this;
     return this.request()
         .setMethod('POST')
         .generateUUID()
@@ -151,7 +151,7 @@ Thread.prototype.broadcastMediaShare = function (mediaId, text) {
         media_id: mediaId,
         client_context: Helpers.generateUUID()
     };
-    if(_.isString(text)) 
+    if(_.isString(text))
         payload.text = text;
     var request = this.request()
         .setMethod('POST')
@@ -170,7 +170,7 @@ Thread.prototype.broadcastProfile = function (profileId, simpleFormat, text) {
         profile_user_id: profileId,
         client_context: Helpers.generateUUID()
     }
-    if(_.isString(text)) 
+    if(_.isString(text))
         payload.text = text;
     var request = this.request()
         .setMethod('POST')
@@ -178,7 +178,7 @@ Thread.prototype.broadcastProfile = function (profileId, simpleFormat, text) {
         .setResource('threadsBrodcastProfile')
         .setData(payload)
         .send();
-    return threadsWrapper(this.session, request)    
+    return threadsWrapper(this.session, request)
 };
 
 
@@ -189,7 +189,7 @@ Thread.prototype.broadcastHashtag = function (hashtag, simpleFormat, text) {
         hashtag: hashtag,
         client_context: Helpers.generateUUID()
     }
-    if(_.isString(text)) 
+    if(_.isString(text))
         payload.text = text;
     var request = this.request()
         .setMethod('POST')
@@ -197,10 +197,10 @@ Thread.prototype.broadcastHashtag = function (hashtag, simpleFormat, text) {
         .setResource('threadsBrodcastHashtag')
         .setData(payload)
         .send();
-    return threadsWrapper(this.session, request)    
+    return threadsWrapper(this.session, request)
 };
 
-// todo configure broadcast /configure location  
+// todo configure broadcast /configure location
 
 
 Thread.approveAll = function (session) {
@@ -208,7 +208,7 @@ Thread.approveAll = function (session) {
         .setMethod('POST')
         .generateUUID()
         .setResource('threadsApproveAll')
-        .send();   
+        .send();
 };
 
 
@@ -229,7 +229,7 @@ Thread.getById = function (session, id) {
 };
 
 
-Thread.configureText = function(session, users, text) { 
+Thread.configureText = function(session, users, text) {
     if(!_.isArray(users)) users = [users];
     var link_urls = Helpers.extractUrl(text);
     var endpoint = 'threadsBrodcastText';
@@ -240,7 +240,7 @@ Thread.configureText = function(session, users, text) {
     }
 
     if(link_urls) {
-        payload.link.text = text;
+        payload.text = text;
         payload.link_urls = link_urls;
         endpoint = 'threadsBrodcastLink';
     } else {
@@ -253,38 +253,38 @@ Thread.configureText = function(session, users, text) {
         .setResource(endpoint)
         .setData(payload)
         .send();
-    return threadsWrapper(session, request);  
+    return threadsWrapper(session, request);
 };
 
 
-Thread.configureMediaShare = function(session, users, mediaId, text) {  
+Thread.configureMediaShare = function(session, users, mediaId, text) {
     if(!_.isArray(users)) users = [users];
     var payload = {
         recipient_users: JSON.stringify([users]),
         client_context: Helpers.generateUUID(),
         media_id: mediaId
     };
-    if(_.isString(text)) 
+    if(_.isString(text))
         payload.text = text;
     var request = new Request(session)
         .setMethod('POST')
         .generateUUID()
         .setResource('threadsBrodcastShare')
         .setData(payload)
-        .send();  
-    return threadsWrapper(session, request);  
+        .send();
+    return threadsWrapper(session, request);
 };
 
 
-Thread.configureProfile = function(session, users, profileId, simpleFormat, text) {  
+Thread.configureProfile = function(session, users, profileId, simpleFormat, text) {
     if(!_.isArray(users)) users = [users];
     var payload = {
         recipient_users: JSON.stringify([users]),
         simple_format: simpleFormat ? '1' : '0',
         profile_user_id: profileId,
-        client_context: Helpers.generateUUID()    
+        client_context: Helpers.generateUUID()
     };
-    if(_.isString(text)) 
+    if(_.isString(text))
         payload.text = text;
     var request = new Request(session)
         .setMethod('POST')
@@ -292,19 +292,19 @@ Thread.configureProfile = function(session, users, profileId, simpleFormat, text
         .setResource('threadsBrodcastProfile')
         .setData(payload)
         .send();
-    return threadsWrapper(session, request)        
+    return threadsWrapper(session, request)
 };
 
 
-Thread.configureHashtag = function(session, users, hashtag, simpleFormat, text) {  
+Thread.configureHashtag = function(session, users, hashtag, simpleFormat, text) {
     if(!_.isArray(users)) users = [users];
     var payload = {
         recipient_users: JSON.stringify([users]),
         simple_format: simpleFormat ? '1' : '0',
         hashtag: hashtag,
-        client_context: Helpers.generateUUID()    
+        client_context: Helpers.generateUUID()
     };
-    if(_.isString(text)) 
+    if(_.isString(text))
         payload.text = text;
     var request = new Request(session)
         .setMethod('POST')
@@ -312,11 +312,11 @@ Thread.configureHashtag = function(session, users, hashtag, simpleFormat, text) 
         .setResource('threadsBrodcastHashtag')
         .setData(payload)
         .send();
-    return threadsWrapper(session, request)        
+    return threadsWrapper(session, request)
 };
 
 
-Thread.recentRecipients = function(session) {  
+Thread.recentRecipients = function(session) {
     return new Request(session)
         .setMethod('GET')
         .setResource('threadsRecentRecipients')
@@ -324,7 +324,7 @@ Thread.recentRecipients = function(session) {
         .then(function(json) {
             return {
                 recentRecipients: json.recent_recipients,
-                expirationInterval: json.expiration_interval 
+                expirationInterval: json.expiration_interval
             }
         });
 };
