@@ -1,7 +1,7 @@
 {
   "name": "instagram-private-api",
   "description": "Instagram private API wrapper for full access to instagram",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "main": "index.js",
   "license": "MIT",
   "bugs": {
@@ -40,7 +40,7 @@
   "devDependencies": {
     "faker": "^4.1.0",
     "gm": "^1.23.0",
-    "image-diff": "^1.6.3",
+    "image-diff": "2.0.0",
     "inquirer": "^1.1.2",
     "mkdirp": "^0.5.1",
     "mocha": "^2.4.5",
