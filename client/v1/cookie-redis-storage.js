@@ -1,6 +1,6 @@
 var util = require('util');
 
-var RedisCookieStore = require('redis-cookie-monster');
+var RedisCookieStore = require('tough-cookie-redis');
 var CookieStorage = require('./cookie-storage');
 var CONSTANTS = require("./constants");
 
@@ -13,18 +13,6 @@ function CookieRedisStorage(id, options) {
   }
 
   const store = new RedisCookieStore(`instagramcookie:${id}`, options);
-
-  store.__proto__.getAllCookies = function(cb) {
-    store.findCookies(CONSTANTS.HOSTNAME, '/', function(err, cookies) {
-      if (err) return cb(err);
-
-      cookies.sort(function(a, b) {
-        return (a.creationIndex || 0) - (b.creationIndex || 0);
-      });
-
-      cb(null, cookies);
-    });
-  };
 
   CookieStorage.call(this, store);
 }
