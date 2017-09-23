@@ -194,7 +194,7 @@ Request.prototype.removeHeader = function(name) {
 Request.prototype.setUrl = function(url) {
     if(!_.isString(url) || !Helpers.isValidUrl(url))
         throw new Error("The `url` parameter must be valid url string");
-    this._url = url;    
+    this._url = url;
     return this;
 };
 
@@ -234,6 +234,9 @@ Request.prototype.setSession = function(session) {
     if(session.proxyObj) {
       const protocol = session.proxyObj.protocol;
       const options = Object.assign({}, session.proxyObj);
+
+      if (!protocol)
+        throw new Error("`proxy.protocol` parametr is required")
 
       delete options.protocol;
 
