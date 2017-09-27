@@ -16,7 +16,7 @@ var Request = require('../request');
 var Helpers = require('../../../helpers');
 var Account = require('../account');
 
-AccountFollowingFeed.prototype.get = function () {
+AccountFollowingFeed.prototype.get = function (opts = {}) {
     var that = this;
     return new Request(that.session)
         .setMethod('GET')
@@ -25,7 +25,7 @@ AccountFollowingFeed.prototype.get = function () {
             maxId: that.getCursor(),
             rankToken: Helpers.generateUUID()
         })
-        .send()
+        .send(opts)
         .then(function(data) {
             that.moreAvailable = !!data.next_max_id;
             if (that.moreAvailable)

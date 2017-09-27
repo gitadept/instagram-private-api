@@ -18,14 +18,14 @@ InboxPendingFeed.prototype.getPendingRequestsTotal = function () {
 };
 
 
-InboxPendingFeed.prototype.get = function () {
+InboxPendingFeed.prototype.get = function (opts = {}) {
     var that = this;
     return new Request(this.session)
         .setMethod('GET')
         .setResource('inboxPending', {
             maxId: this.getCursor()
         })
-        .send()
+        .send(opts)
         .then(function(json) {
             that.moreAvailable = json.inbox.has_older;
             that.pendingRequestsTotal = json.pending_requests_total;

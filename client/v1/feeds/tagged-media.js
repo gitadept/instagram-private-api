@@ -15,7 +15,7 @@ var Request = require('../request');
 var Helpers = require('../../../helpers');
 var Exceptions = require('../exceptions');
 
-TaggedMediaFeed.prototype.get = function () {
+TaggedMediaFeed.prototype.get = function (opts = {}) {
     var that = this;
     return this.session.getAccountId()
         .then(function(id) {
@@ -27,7 +27,7 @@ TaggedMediaFeed.prototype.get = function () {
                     maxId: that.getCursor(),
                     rankToken: rankToken
                 })
-                .send()
+                .send(opts)
                 .then(function(data) {
                     that.moreAvailable = data.more_available && !!data.next_max_id;
                     if (!that.moreAvailable && !_.isEmpty(data.ranked_items) && !that.getCursor())

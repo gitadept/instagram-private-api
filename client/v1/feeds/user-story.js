@@ -7,7 +7,7 @@ function UserStory(session, userIds) {
     this.userIds = userIds.map( id => String(id) );
 }
 
-UserStory.prototype.get = function () {
+UserStory.prototype.get = function (opts = {}) {
     var that = this;
     return new Request(that.session)
         .setMethod('POST')
@@ -17,7 +17,7 @@ UserStory.prototype.get = function () {
             user_ids: this.userIds
         })
         .signPayload()
-        .send()
+        .send(opts)
         .then(function(data) {
           return _.map(data.items, function (medium) {
               return new Media(that.session, medium);

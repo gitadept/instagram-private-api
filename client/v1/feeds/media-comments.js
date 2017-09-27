@@ -15,7 +15,7 @@ var Request = require('../request');
 var Comment = require('../comment');
 
 
-MediaCommentsFeed.prototype.get = function () {
+MediaCommentsFeed.prototype.get = function (opts = {}) {
     var that = this;
     return new Request(that.session)
         .setMethod('GET')
@@ -23,7 +23,7 @@ MediaCommentsFeed.prototype.get = function () {
             mediaId: that.mediaId,
             maxId: that.getCursor()
         })
-        .send()
+        .send(opts)
         .then(function(data) {
             that.moreAvailable = data.has_more_comments && !!data.next_max_id;
             if (that.moreAvailable) {

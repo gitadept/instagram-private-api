@@ -17,7 +17,7 @@ var Helpers = require('../../../helpers');
 var Account = require('../account');
 
 
-UserMediaFeed.prototype.get = function () {
+UserMediaFeed.prototype.get = function (opts = {}) {
     var that = this;
     return this.session.getAccountId()
         .then(function(id) {
@@ -29,7 +29,7 @@ UserMediaFeed.prototype.get = function () {
                     maxId: that.getCursor(),
                     rankToken: rankToken
                 })
-                .send()
+                .send(opts)
                 .then(function(data) {
                     that.moreAvailable = data.more_available;
                     var lastOne = _.last(data.items);

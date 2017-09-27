@@ -14,7 +14,7 @@ var Helpers = require('../../../helpers');
 var Media = require('../media');
 
 
-TimelineFeed.prototype.get = function () {
+TimelineFeed.prototype.get = function (opts = {}) {
     var that = this;
     return this.session.getAccountId()
         .then(function(id) {
@@ -25,7 +25,7 @@ TimelineFeed.prototype.get = function () {
                     maxId: that.getCursor(),
                     rankToken: rankToken
                 })
-                .send();
+                .send(opts);
         })
         .then(function(data) {
             that.moreAvailable = data.more_available;
@@ -36,6 +36,6 @@ TimelineFeed.prototype.get = function () {
             }));
             if (that.moreAvailable)
                 that.setCursor(data.next_max_id);
-            return media;    
+            return media;
         });
 };

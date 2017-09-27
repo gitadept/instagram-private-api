@@ -13,7 +13,7 @@ module.exports = SavedFeed;
 var Media = require('../media');
 var Request = require('../request');
 
-SavedFeed.prototype.get = function () {
+SavedFeed.prototype.get = function (opts = {}) {
     var that = this;
     return new Request(that.session)
         .setMethod('POST')
@@ -23,7 +23,7 @@ SavedFeed.prototype.get = function () {
         .generateUUID()
         .setData({})
         .signPayload()
-        .send()
+        .send(opts)
         .then(function(data) {
             that.moreAvailable = data.more_available;
             if (that.moreAvailable && data.next_max_id) {

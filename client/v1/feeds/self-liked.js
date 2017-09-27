@@ -14,14 +14,14 @@ var Media = require('../media');
 var Request = require('../request');
 
 
-SelfLikedFeed.prototype.get = function () {
+SelfLikedFeed.prototype.get = function (opts = {}) {
     var that = this;
     return new Request(that.session)
         .setMethod('GET')
         .setResource('selfLikedFeed', {
             maxId: that.getCursor()
         })
-        .send()
+        .send(opts)
         .then(function(data) {
             var nextMaxId = data.next_max_id ? data.next_max_id.toString() : data.next_max_id;
             that.moreAvailable = data.more_available && !!nextMaxId;

@@ -14,7 +14,7 @@ module.exports = AccountFollowersFeed;
 var Request = require('../request');
 var Account = require('../account');
 
-AccountFollowersFeed.prototype.get = function () {
+AccountFollowersFeed.prototype.get = function (opts = {}) {
     var that = this;
     return new Request(that.session)
         .setMethod('GET')
@@ -22,7 +22,7 @@ AccountFollowersFeed.prototype.get = function () {
             id: that.accountId,
             maxId: that.cursor
         })
-        .send()
+        .send(opts)
         .then(function(data) {
             that.moreAvailable = !!data.next_max_id;
             if (that.moreAvailable) {

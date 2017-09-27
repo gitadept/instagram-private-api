@@ -16,7 +16,7 @@ var Request = require('../request');
 
 
 
-ThreadItemsFeed.prototype.get = function () {
+ThreadItemsFeed.prototype.get = function (opts = {}) {
     var that = this;
     return new Request(this.session)
         .setMethod('GET')
@@ -24,7 +24,7 @@ ThreadItemsFeed.prototype.get = function () {
             cursor: this.getCursor(),
             threadId: this.threadId
         })
-        .send()
+        .send(opts)
         .then(function (json) {
             var items = _.map(json.thread.items, function(item) {
                 return new ThreadItem(that.session, item);
