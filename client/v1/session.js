@@ -117,11 +117,11 @@ Session.prototype.setProxy = function(val) {
 }
 
 
-Session.prototype.getAccount = function () {
+Session.prototype.getAccount = function (opts = {}) {
     var that = this;
     return that.getAccountId()
         .then(function(id){
-            return Account.getById(that, id);
+            return Account.getById(that, id, opts);
         })
 };
 

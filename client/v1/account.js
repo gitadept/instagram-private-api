@@ -22,15 +22,15 @@ Account.prototype.parseParams = function (json) {
 };
 
 
-Account.getById = function (session, id) {
+Account.getById = function (session, id, opts = {}) {
     return new Request(session)
         .setMethod('GET')
         .setResource('userInfo', {id: id})
-        .send()
+        .send(opts)
         .then(function(data) {
             return new Account(session, data.user)
         })
-};  
+};
 
 
 Account.prototype.update = function () {
@@ -40,7 +40,7 @@ Account.prototype.update = function () {
             that._params = account.params
             return that;
         })
-};  
+};
 
 
 Account.search = function (session, username) {
@@ -59,7 +59,7 @@ Account.search = function (session, username) {
             return _.map(data.users, function (user) {
                 return new Account(session, user);
             });
-        })    
+        })
 };
 
 
@@ -67,12 +67,12 @@ Account.searchForUser = function (session, username) {
     return Account.search(session, username)
         .then(function(accounts) {
             var account = _.find(accounts, function(account) {
-                return account.params.username === username;    
+                return account.params.username === username;
             })
             if(!account)
                 throw new Exceptions.IGAccountNotFoundError();
-            return account;    
-        })        
+            return account;
+        })
 };
 
 
@@ -80,7 +80,7 @@ Account.setProfilePicture = function (session, streamOrPath) {
     var stream = Helpers.pathToStream(streamOrPath);
     var request = new Request(session)
     return request.setMethod('POST')
-        .setResource('changeProfilePicture')                    
+        .setResource('changeProfilePicture')
         .generateUUID()
         .signPayload()
         .transform(function(opts){
@@ -95,7 +95,7 @@ Account.setProfilePicture = function (session, streamOrPath) {
         })
         .send()
         .then(function(json) {
-            return new Account(session, json.user)    
+            return new Account(session, json.user)
         })
 };
 
@@ -113,19 +113,19 @@ Account.prototype.setProfilePicture = function(streamOrPath) {
 Account.setPrivacy = function (session, pri) {
     return new Request(session)
         .setMethod('POST')
-        .setResource(pri ? 'setAccountPrivate' : 'setAccountPublic')                    
+        .setResource(pri ? 'setAccountPrivate' : 'setAccountPublic')
         .generateUUID()
         .signPayload()
         .send()
         .then(function(json) {
-            return new Account(session, json.user)    
+            return new Account(session, json.user)
         })
 };
 
 
 Account.prototype.setPrivacy = function(pri) {
     var that = this;
-    return Account.setPrivacy(this.session, pri) 
+    return Account.setPrivacy(this.session, pri)
         .then(function(user) {
             that._params.isPrivate = user.params.isPrivate;
             return that;
@@ -143,7 +143,7 @@ Account.editProfile = function(session, settings) {
          settings.external_url = settings.externalUrl;
     var pickData = function (o) {
         return _.pick(o, 'gender', 'biography', 'phone_number', 'first_name', 'external_url', 'username', 'email');
-    }     
+    }
     return new Request(session)
         .setMethod('GET')
         .setResource('currentAccount')
@@ -151,14 +151,14 @@ Account.editProfile = function(session, settings) {
         .then(function (json) {
             return new Request(session)
                 .setMethod('POST')
-                .setResource('editAccount')                    
+                .setResource('editAccount')
                 .generateUUID()
                 .setData(pickData(_.extend(json.user, settings)))
                 .signPayload()
                 .send()
         })
         .then(function(json) {
-            var account = new Account(session, json.user)    
+            var account = new Account(session, json.user)
             return account.update();
         })
         .catch(function(e) {
@@ -183,12 +183,11 @@ Account.showProfile = function(session) {
 };
 
 
-Account.prototype.editProfile = function(settings) {   
+Account.prototype.editProfile = function(settings) {
     return Account.editProfile(this.session, settings || {});
 };
 
 
-Account.prototype.showProfile = function() {   
+Account.prototype.showProfile = function() {
     return Account.showProfile(this.session);
 };
-
