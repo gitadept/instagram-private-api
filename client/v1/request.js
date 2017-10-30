@@ -396,6 +396,8 @@ Request.prototype.send = function (options, attemps) {
             var response = err.response;
             if (response.statusCode == 404)
                 throw new Exceptions.NotFoundError(response);
+            if (response.statusCode == 407)
+                throw new Exceptions.ProxyAuthenticationError();
             if (response.statusCode >= 500) {
                 if (attemps <= that.attemps) {
                     attemps += 1;

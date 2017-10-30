@@ -54,6 +54,15 @@ exports.RequestError = RequestError;
 
 
 
+function ProxyAuthenticationError(payload) {
+    this.name = "ProxyAuthenticationError";
+    this.message = "Proxy Authentication Required";
+}
+util.inherits(ProxyAuthenticationError, APIError);
+exports.ProxyAuthenticationError = ProxyAuthenticationError;
+
+
+
 function AuthenticationError(message) {
     this.name = "AuthenticationError";
     this.message = message || "Not possible to authenticate";
