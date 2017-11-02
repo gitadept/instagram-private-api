@@ -16,17 +16,13 @@ var Media = require('../media');
 
 TimelineFeed.prototype.get = function (opts = {}) {
     var that = this;
-    return this.session.getAccountId()
-        .then(function(id) {
-            var rankToken = Helpers.buildRankToken(id);
-            return new Request(that.session)
-                .setMethod('GET')
-                .setResource('timelineFeed', {
-                    maxId: that.getCursor(),
-                    rankToken: rankToken
-                })
-                .send(opts);
+    return new Request(that.session)
+        .setMethod('GET')
+        .setResource('timelineFeed', {
+            maxId: that.getCursor(),
+            rankToken: null
         })
+        .send(opts)
         .then(function(data) {
             that.moreAvailable = data.more_available;
             var media = _.compact(_.map(data.feed_items, function(item){

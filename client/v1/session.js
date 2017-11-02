@@ -188,6 +188,12 @@ Session.login = function(session, username, password) {
         .spread(function(session) {
             return session;
         })
+        .catch(Exceptions.SentryBlockError, function(error) {
+            return new Timeline(session).get();
+        })
+        .spread(function(session) {
+            return session;
+        })
         .catch(Exceptions.CheckpointError, function(error) {
             // This situation is not really obvious,
             // but even if you got checkpoint error (aka captcha or phone)
