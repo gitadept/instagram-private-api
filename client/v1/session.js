@@ -204,7 +204,7 @@ Session.login = function(session, username, password) {
         .catch(Exceptions.SentryBlockError, function(error) {
             return new Timeline(session).get();
         })
-        .then(function(session) {
+        .then(function(data) {
             return session;
         })
 }
