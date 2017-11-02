@@ -50,8 +50,8 @@ Object.defineProperty(Session.prototype, "device", {
 
 
 Object.defineProperty(Session.prototype, "CSRFToken", {
-    get: function() { 
-        var cookies = this.jar.getCookies(CONSTANTS.HOST) 
+    get: function() {
+        var cookies = this.jar.getCookies(CONSTANTS.HOST)
         var item = _.find(cookies, { key: "csrftoken" });
         return item ? item.value : "missing";
     },
@@ -188,12 +188,6 @@ Session.login = function(session, username, password) {
         .spread(function(session) {
             return session;
         })
-        .catch(Exceptions.SentryBlockError, function(error) {
-            return new Timeline(session).get();
-        })
-        .spread(function(session) {
-            return session;
-        })
         .catch(Exceptions.CheckpointError, function(error) {
             // This situation is not really obvious,
             // but even if you got checkpoint error (aka captcha or phone)
@@ -207,7 +201,12 @@ Session.login = function(session, username, password) {
                     throw error;
                 })
         })
-
+        .catch(Exceptions.SentryBlockError, function(error) {
+            return new Timeline(session).get();
+        })
+        .then(function(session) {
+            return session;
+        })
 }
 
 Session.create = function(device, storage, username, password, proxy) {
