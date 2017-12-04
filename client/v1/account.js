@@ -33,6 +33,17 @@ Account.getById = function (session, id, opts = {}) {
 };
 
 
+Account.getByName = function (session, username) {
+    return new Request(session)
+        .setMethod('GET')
+        .setResource('usernameInfo', {name: username})
+        .send()
+        .then(function(data) {
+            return new Account(session, data.user)
+        })
+};
+
+
 Account.prototype.update = function () {
     var that = this;
     return Account.getById(this.session, this.id)

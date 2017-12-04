@@ -202,7 +202,10 @@ Session.login = function(session, username, password) {
                 })
         })
         .catch(Exceptions.SentryBlockError, function(error) {
-            return new Timeline(session).get();
+            return new Timeline(session).get()
+              .catch(Exceptions.AuthenticationError, function(error) {
+                throw new Exceptions.SentryBlockError(error.message);
+              })
         })
         .then(function(data) {
             return session;

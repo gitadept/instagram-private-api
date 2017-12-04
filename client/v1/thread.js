@@ -255,24 +255,6 @@ Thread.configureText = function(session, users, text) {
     return threadsWrapper(session, request);
 };
 
-Thread.configurePhoto = function (session, users, upload_id) {    
-        if (!_.isArray(users)) users = [users];
-    
-        var payload = {
-            recipient_users: JSON.stringify([users]),
-            client_context: Helpers.generateUUID(),
-            upload_id: upload_id
-        };
-    
-        var request = new Request(session)
-        return request.setMethod('POST')
-            .setResource('threadsBrodcastPhoto')
-            .generateUUID()
-            .setData(payload)
-            .send();
-    
-        return threadsWrapper(session, request);
-    };
 
 Thread.configurePhoto = function(session, users, upload_id) {
     if (!_.isArray(users)) users = [users];
@@ -286,6 +268,33 @@ Thread.configurePhoto = function(session, users, upload_id) {
     var request = new Request(session)
     return request.setMethod('POST')
         .setResource('threadsBrodcastPhoto')
+        .generateUUID()
+        .setData(payload)
+        .send();
+
+    return threadsWrapper(session, request);
+};
+
+
+Thread.uploadPhoto = function(session, users, fileBuffer) {
+    if (!_.isArray(users)) users = [users];
+
+    var payload = {
+        recipient_users: JSON.stringify([users]),
+        client_context: Helpers.generateUUID(),
+        action: 'send_item',
+        photo: {
+          value: fileBuffer,
+          options: {
+            filename: `direct_temp_photo_${Date.now()}.jpg`,
+            contentType: 'application/octet-stream',
+          },
+        }
+    };
+
+    var request = new Request(session)
+    return request.setMethod('POST')
+        .setResource('threadsUploadPhoto')
         .generateUUID()
         .setData(payload)
         .send();
