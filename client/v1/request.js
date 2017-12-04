@@ -240,10 +240,12 @@ Request.prototype.setSession = function(session) {
 
       delete options.protocol;
 
-      if (['http', 'https'].includes(protocol))
+      if (['http', 'https'].includes(protocol)) {
         this.setOptions({agent: new HttpsProxyAgent(options)});
-      if (protocol === 'socks5')
-        this.setOptions({agent: new SocksProxyAgent(options)});
+      } else if (protocol.includes('socks')) {
+        const agent = new SocksProxyAgent({ ...options, protocol: 'socks:' });
+        this.setOptions({ agent });
+      }
     }
     return this;
 };
